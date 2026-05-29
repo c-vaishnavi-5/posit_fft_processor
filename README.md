@@ -30,10 +30,8 @@ across 15 real-world audio test signals.
 | Frequency Detection Accuracy | 100% (15/15 signals) |
 
 ## Repository Structure
-- `rtl/` — Verilog HDL source files
-- `testbench/` — Simulation testbenches  
+- `Verilog/` — Verilog HDL source files with testbenches
 - `python/` — Audio preprocessing and analysis scripts
-- `reports/` — Synthesis and timing reports
 ## Academic Context
 B.Tech Final Year Project — VIT Chennai, April 2026  
 Supervised by Dr. Augusta Sophy Beulet P
