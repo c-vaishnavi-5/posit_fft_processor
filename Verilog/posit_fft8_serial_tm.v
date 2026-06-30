@@ -98,19 +98,6 @@ endmodule
 // =============================================================================
 // posit_fft8_serial_tm.v — Time-Multiplexed 8-point DIT FFT (Posit32, ES=3)
 // =============================================================================
-// posit_fft8_serial_tm.v — Time-Multiplexed 8-point DIT FFT (Posit32, ES=3)
-//
-// BUG FIX: The original FSM collected butterfly results at cyc=4..7, which
-// assumed a 4-cycle butterfly latency.  The actual posit_butterfly_unit
-// latency is 14 cycles (4-cycle mult + 5-cycle addsub + 5-cycle addsub).
-// Results from launches at cyc=0..3 are not valid until cyc=14..17.
-//
-// Fix applied:
-//   1. cyc widened from reg [3:0] to reg [4:0]  (needs 0..17)
-//   2. In every stage the present window (cyc=0..3) is unchanged.
-//   3. The collect window moved from cyc=4..7  →  cyc=14..17.
-//   4. cyc 4..13 are idle (pipeline draining) — handled by default: ; 
-// =============================================================================
 
 module posit_fft8_serial_tm (
     input  wire        clk,
@@ -167,7 +154,7 @@ localparam S_STAGE3 = 2'd3;
 
 reg [1:0] state;
 
-// FIX 1: cyc widened to 5 bits to count up to 17
+
 reg [4:0] cyc;
 
 // =============================================================================
@@ -247,13 +234,7 @@ posit_butterfly_unit butterfly (
 
 // =============================================================================
 // FSM
-//
-// Present window : cyc = 0..3  (launch 4 butterfly operations)
-// Drain window   : cyc = 4..13 (pipeline draining — 14-cycle latency)
-// Collect window : cyc = 14..17 (results valid, store and advance)
-//
-// FIX 2: collect arms moved from case 4..7 → case 14..17 in all stages.
-// =============================================================================
+
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         state <= S_IDLE; cyc <= 0; done <= 0; bf_op <= 0;
